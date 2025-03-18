@@ -32,7 +32,7 @@
           "protocol": "tcp"
         },
         "mongodb": {
-          "hostPort": 27017,
+          "hostPort": 27018,
           "guestPort": 27017,
           "protocol": "tcp"
         },
@@ -68,7 +68,7 @@
       },
       "mongodb": {
         "host": "localhost",
-        "port": 27017,
+        "port": 27018,
         "database": "diagnosis_db",
         "docker": {
           "container": "mongodb",
@@ -119,6 +119,32 @@
     "checkMongoDB": "ssh -i ~/.ssh/vm_key -p 3322 godzilla@localhost 'mongosh --eval \"db.runCommand({ping: 1})\"'",
     "dockerPs": "ssh -i ~/.ssh/vm_key -p 3322 godzilla@localhost 'docker ps'",
     "restartElasticsearch": "ssh -i ~/.ssh/vm_key -p 3322 godzilla@localhost 'docker restart elasticsearch'",
-    "restartMongoDB": "ssh -i ~/.ssh/vm_key -p 3322 godzilla@localhost 'docker restart mongodb'"
+    "restartMongoDB": "ssh -i ~/.ssh/vm_key -p 3322 godzilla@localhost 'docker restart mongodb'",
+    "vmTroubleshooting": {
+      "checkVMStatus": "& 'C:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe' showvminfo ubuntu24 | Select-String -Pattern 'State'",
+      "startVM": "& 'C:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe' startvm ubuntu24 --type headless",
+      "restartVM": "& 'C:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe' controlvm ubuntu24 reset",
+      "poweroffVM": "& 'C:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe' controlvm ubuntu24 poweroff",
+      "startServices": "ssh -i ~/.ssh/vm_key -p 3322 godzilla@localhost 'docker start elasticsearch && docker start mongodb'",
+      "portConflictResolution": {
+        "checkPorts": "netstat -ano | findstr :9200 & netstat -ano | findstr :27017 & netstat -ano | findstr :3322",
+        "killProcessByPID": "taskkill /F /PID",
+        "stopLocalMongoDB": "net stop MongoDB || sc stop MongoDB",
+        "stopLocalElasticsearch": "net stop elasticsearch* || sc stop elasticsearch*",
+        "removePortForwarding": "& 'C:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe' modifyvm ubuntu24 --natpf1 delete \"elasticsearch\" ; & 'C:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe' modifyvm ubuntu24 --natpf1 delete \"mongodb\"",
+        "addPortForwarding": "& 'C:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe' modifyvm ubuntu24 --natpf1 \"elasticsearch,tcp,,9200,,9200\" ; & 'C:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe' modifyvm ubuntu24 --natpf1 \"mongodb,tcp,,27017,,27017\"",
+        "troubleshootingSteps": [
+          "1. Check if ports are in use with checkPorts",
+          "2. Stop any local MongoDB or Elasticsearch services",
+          "3. If ports still in use, kill the processes",
+          "4. Power off VM with poweroffVM",
+          "5. Remove port forwarding rules",
+          "6. Add port forwarding rules back",
+          "7. Start VM with startVM",
+          "8. Wait 30-60 seconds for VM to boot",
+          "9. Start services with startServices"
+        ]
+      }
+    }
   }
 } 

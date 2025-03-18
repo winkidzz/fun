@@ -1,6 +1,7 @@
 package com.medical.repository;
 
 import com.medical.model.DiagnosisRule;
+import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,4 +11,7 @@ import java.util.List;
 public interface DiagnosisRuleRepository extends ElasticsearchRepository<DiagnosisRule, String> {
     List<DiagnosisRule> findByActiveTrueAndIcdCodesContainingAndNdcCodesContaining(
             String icdCode, String ndcCode);
+    
+    @Query("{\"bool\": {\"must\": [{\"match_all\": {}}]}}")
+    List<DiagnosisRule> findAllRules();
 } 

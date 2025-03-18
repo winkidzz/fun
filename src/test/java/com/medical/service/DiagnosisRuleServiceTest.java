@@ -4,6 +4,7 @@ import com.medical.dto.DiagnosisRequest;
 import com.medical.dto.DiagnosisResponse;
 import com.medical.model.DiagnosisRule;
 import com.medical.repository.DiagnosisRuleRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,6 +28,9 @@ class DiagnosisRuleServiceTest {
     @Mock
     private DiagnosisRuleRepository repository;
 
+    @Mock
+    private ObjectMapper objectMapper;
+
     private DiagnosisRuleService service;
 
     private DiagnosisRule testRule;
@@ -34,7 +38,7 @@ class DiagnosisRuleServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        service = new DiagnosisRuleService(repository);
+        service = new DiagnosisRuleService(repository, objectMapper);
         testRule = new DiagnosisRule();
         testRule.setId("1");
         testRule.setIcdCodes(Arrays.asList("E11.9", "F41.9"));

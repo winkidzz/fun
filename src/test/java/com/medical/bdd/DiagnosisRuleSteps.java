@@ -5,6 +5,7 @@ import com.medical.dto.DiagnosisResponse;
 import com.medical.model.DiagnosisRule;
 import com.medical.repository.DiagnosisRuleRepository;
 import com.medical.service.DiagnosisRuleService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
@@ -30,6 +31,9 @@ public class DiagnosisRuleSteps {
     @Mock
     private DiagnosisRuleRepository repository;
 
+    @Mock
+    private ObjectMapper objectMapper;
+
     private DiagnosisRuleService service;
     private DiagnosisRule createdRule;
     private DiagnosisResponse recommendation;
@@ -37,7 +41,7 @@ public class DiagnosisRuleSteps {
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        service = new DiagnosisRuleService(repository);
+        service = new DiagnosisRuleService(repository, objectMapper);
         
         // Default mock behavior
         when(repository.save(any(DiagnosisRule.class))).thenAnswer(invocation -> {

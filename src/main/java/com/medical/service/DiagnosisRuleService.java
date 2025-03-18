@@ -4,18 +4,46 @@ import com.medical.dto.DiagnosisRequest;
 import com.medical.dto.DiagnosisResponse;
 import com.medical.model.DiagnosisRule;
 import com.medical.repository.DiagnosisRuleRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.core.io.ClassPathResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
 public class DiagnosisRuleService {
     private final DiagnosisRuleRepository repository;
+    private final ObjectMapper objectMapper;
+    private static final Logger log = LoggerFactory.getLogger(DiagnosisRuleService.class);
+
+    public void loadRulesFromJson() {
+        try {
+            ClassPathResource resource = new ClassPathResource("default-rules.json");
+            Map<String, List<DiagnosisRule>> rulesMap = objectMapper.readValue(
+                resource.getInputStream(),
+                new TypeReference<Map<String, List<DiagnosisRule>>>() {}
+            );
+            List<DiagnosisRule> rules = rulesMap.get("rules");
+            if (rules != null) {
+                repository.saveAll(rules);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load rules from JSON file", e);
+        }
+    }
 
     public DiagnosisRule createRule(DiagnosisRule rule) {
         rule.setActive(true);
@@ -47,7 +75,12 @@ public class DiagnosisRuleService {
     }
 
     public List<DiagnosisRule> getAllRules() {
-        return (List<DiagnosisRule>) repository.findAll();
+        try {
+            return repository.findAllRules();
+        } catch (Exception e) {
+            log.error("Error retrieving diagnosis rules", e);
+            return new ArrayList<>();
+        }
     }
 
     public DiagnosisResponse getRecommendation(DiagnosisRequest request) {

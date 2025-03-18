@@ -46,6 +46,15 @@ public class DiagnosisRuleController {
 
     @PostMapping("/recommend")
     public ResponseEntity<DiagnosisResponse> getRecommendation(@RequestBody DiagnosisRequest request) {
+        if (request.getPatientDob() == null) {
+            return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.ok(service.getRecommendation(request));
+    }
+
+    @PostMapping("/load-default-rules")
+    public ResponseEntity<String> loadDefaultRules() {
+        service.loadRulesFromJson();
+        return ResponseEntity.ok("Default rules loaded successfully");
     }
 } 
