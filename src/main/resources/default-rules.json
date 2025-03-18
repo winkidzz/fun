@@ -1,0 +1,31 @@
+{
+  "rules": [
+    {
+      "icdCodes": ["E11.9", "F41.9"],
+      "ndcCodes": ["0002-8215-01", "0002-8215-02"],
+      "minAge": 18,
+      "maxAge": 65,
+      "recommendation": "Consider prescribing Metformin for type 2 diabetes management. Monitor blood glucose levels regularly.",
+      "confidenceScore": 0.85,
+      "active": true
+    },
+    {
+      "icdCodes": ["I10", "I11.9"],
+      "ndcCodes": ["0002-8215-03", "0002-8215-04"],
+      "minAge": 30,
+      "maxAge": 75,
+      "recommendation": "Consider prescribing Lisinopril for hypertension management. Monitor blood pressure weekly.",
+      "confidenceScore": 0.90,
+      "active": true
+    },
+    {
+      "icdCodes": ["J45.901", "J45.902"],
+      "ndcCodes": ["0002-8215-05", "0002-8215-06"],
+      "minAge": 5,
+      "maxAge": 60,
+      "recommendation": "Consider prescribing Albuterol for asthma management. Monitor peak flow readings daily.",
+      "confidenceScore": 0.88,
+      "active": true
+    }
+  ]
+} 

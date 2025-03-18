@@ -1,0 +1,124 @@
+{
+  "project": {
+    "name": "diagnosis-recommender",
+    "type": "spring-boot",
+    "javaVersion": "17",
+    "description": "Medical diagnosis recommendation system using Elasticsearch and MongoDB"
+  },
+  "dependencies": {
+    "spring-boot": "3.2.3",
+    "spring-data-elasticsearch": "5.2.3",
+    "spring-data-mongodb": "4.2.3",
+    "elasticsearch": "8.12.2",
+    "mongodb": "7.0.5"
+  },
+  "environment": {
+    "virtualbox": {
+      "vm": {
+        "name": "ubuntu24",
+        "type": "Ubuntu 64-bit",
+        "status": "running",
+        "ssh": {
+          "user": "godzilla",
+          "port": 3322,
+          "keyPath": "~/.ssh/vm_key",
+          "host": "localhost"
+        }
+      },
+      "portForwarding": {
+        "elasticsearch": {
+          "hostPort": 9200,
+          "guestPort": 9200,
+          "protocol": "tcp"
+        },
+        "mongodb": {
+          "hostPort": 27017,
+          "guestPort": 27017,
+          "protocol": "tcp"
+        },
+        "docker": {
+          "hostPort": 2375,
+          "guestPort": 2375,
+          "protocol": "tcp"
+        },
+        "ssh": {
+          "hostPort": 3322,
+          "guestPort": 22,
+          "protocol": "tcp"
+        }
+      }
+    },
+    "services": {
+      "elasticsearch": {
+        "url": "http://localhost:9200",
+        "version": "8.12.2",
+        "connectionTimeout": "5s",
+        "socketTimeout": "3s",
+        "docker": {
+          "container": "elasticsearch",
+          "containerId": "03da37a9fcf3",
+          "image": "docker.elastic.co/elasticsearch/elasticsearch:8.12.2",
+          "command": "docker run -d --name elasticsearch -p 9200:9200 -e 'discovery.type=single-node' -e 'xpack.security.enabled=false' docker.elastic.co/elasticsearch/elasticsearch:8.12.2",
+          "status": "running",
+          "ports": {
+            "9200": "9200",
+            "9300": "9300"
+          }
+        }
+      },
+      "mongodb": {
+        "host": "localhost",
+        "port": 27017,
+        "database": "diagnosis_db",
+        "docker": {
+          "container": "mongodb",
+          "containerId": "1fe19300b118",
+          "image": "mongo:7.0.5",
+          "command": "docker run -d --name mongodb -p 27017:27017 mongo:7.0.5",
+          "status": "running",
+          "ports": {
+            "27017": "27017"
+          }
+        }
+      }
+    }
+  },
+  "configuration": {
+    "application": {
+      "serverPort": 8080,
+      "logging": {
+        "elasticsearch": "DEBUG",
+        "application": "DEBUG"
+      }
+    },
+    "test": {
+      "elasticsearch": {
+        "url": "http://localhost:9200",
+        "connectionTimeout": "5s",
+        "socketTimeout": "3s"
+      }
+    }
+  },
+  "projectStructure": {
+    "main": {
+      "java": "src/main/java/com/medical",
+      "resources": "src/main/resources"
+    },
+    "test": {
+      "java": "src/test/java/com/medical",
+      "resources": "src/test/resources"
+    }
+  },
+  "build": {
+    "tool": "maven",
+    "command": "mvn clean install",
+    "testCommand": "mvn test"
+  },
+  "remoteCommands": {
+    "checkElasticsearch": "ssh -i ~/.ssh/vm_key -p 3322 godzilla@localhost 'curl -X GET http://localhost:9200'",
+    "checkMongoDB": "ssh -i ~/.ssh/vm_key -p 3322 godzilla@localhost 'mongosh --eval \"db.runCommand({ping: 1})\"'",
+    "dockerPs": "ssh -i ~/.ssh/vm_key -p 3322 godzilla@localhost 'docker ps'",
+    "restartElasticsearch": "ssh -i ~/.ssh/vm_key -p 3322 godzilla@localhost 'docker restart elasticsearch'",
+    "restartMongoDB": "ssh -i ~/.ssh/vm_key -p 3322 godzilla@localhost 'docker restart mongodb'"
+  }
+} 
